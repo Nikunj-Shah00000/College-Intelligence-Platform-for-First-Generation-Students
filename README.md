@@ -12,7 +12,10 @@
 <p align="center">
   <b>Bridging the Invisible Knowledge Gap in Higher Education Through AI & Community Intelligence</b>
 </p>
-
+<p align="center">
+  <b>For viewing my project - https://youtu.be/a6GSSZthLbg</b>
+</p>
+Note - deployment link will be shared soon
 ---
 
 # 🌍 Problem Statement
