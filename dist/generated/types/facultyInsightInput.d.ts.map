@@ -1,0 +1,1 @@
+{"version":3,"file":"facultyInsightInput.d.ts","sourceRoot":"","sources":["../../../src/generated/types/facultyInsightInput.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,mBAAmB;IAClC,mBAAmB;IACnB,aAAa,EAAE,MAAM,CAAC;IACtB,OAAO,EAAE,MAAM,CAAC;IAChB,MAAM,EAAE,MAAM,CAAC;IACf,UAAU,CAAC,EAAE,MAAM,CAAC;IACpB,oBAAoB;IACpB,OAAO,EAAE,MAAM,CAAC;IAChB,WAAW,EAAE,MAAM,CAAC;CACrB"}

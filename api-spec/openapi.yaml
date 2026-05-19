@@ -1,0 +1,998 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.2.0
+  description: College Intelligence Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: tips
+  - name: users
+  - name: verifications
+  - name: notifications
+  - name: stats
+  - name: confessions
+  - name: faculty-insights
+  - name: nudges
+  - name: roadmap
+  - name: power-map
+  - name: survival-guide
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+
+  /tips:
+    get:
+      operationId: listTips
+      tags: [tips]
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: urgency
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tip"
+    post:
+      operationId: createTip
+      tags: [tips]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TipInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tip"
+
+  /tips/trending:
+    get:
+      operationId: getTrendingTips
+      tags: [tips]
+      responses:
+        "200":
+          description: Trending tips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tip"
+
+  /tips/urgent:
+    get:
+      operationId: getUrgentTips
+      tags: [tips]
+      responses:
+        "200":
+          description: Urgent tips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tip"
+
+  /tips/{id}:
+    get:
+      operationId: getTip
+      tags: [tips]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tip
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tip"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTip
+      tags: [tips]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TipPatch"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tip"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTip
+      tags: [tips]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /tips/{id}/verify:
+    post:
+      operationId: verifyTip
+      tags: [verifications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerificationInput"
+      responses:
+        "201":
+          description: Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tip"
+        "404":
+          description: Not found
+    delete:
+      operationId: unverifyTip
+      tags: [verifications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Unverified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tip"
+        "404":
+          description: Not found
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+    post:
+      operationId: createNotification
+      tags: [notifications]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "404":
+          description: Not found
+
+  /stats:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /stats/categories:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [stats]
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryCount"
+
+  /confessions:
+    get:
+      operationId: listConfessions
+      tags: [confessions]
+      summary: List anonymous confessions on the "What Nobody Tells You" wall
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Confessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Confession"
+    post:
+      operationId: createConfession
+      tags: [confessions]
+      summary: Anonymously post a confession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfessionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Confession"
+
+  /confessions/{id}/upvote:
+    post:
+      operationId: upvoteConfession
+      tags: [confessions]
+      summary: Upvote a confession
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Upvoted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Confession"
+        "404":
+          description: Not found
+
+  /faculty-insights:
+    get:
+      operationId: listFacultyInsights
+      tags: [faculty-insights]
+      summary: List crowdsourced faculty behaviour insights (Office Hour Intelligence)
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: professorName
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Faculty insights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FacultyInsight"
+    post:
+      operationId: createFacultyInsight
+      tags: [faculty-insights]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacultyInsightInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacultyInsight"
+
+  /faculty-insights/{id}/verify:
+    post:
+      operationId: verifyFacultyInsight
+      tags: [faculty-insights]
+      summary: Verify / upvote a faculty insight
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacultyInsight"
+        "404":
+          description: Not found
+
+  /nudges:
+    get:
+      operationId: getNudges
+      tags: [nudges]
+      summary: Get personalised AI nudges for a student
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Nudges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Nudge"
+
+  /roadmap:
+    get:
+      operationId: getRoadmap
+      tags: [roadmap]
+      summary: Get the opportunity timeline / roadmap milestones
+      parameters:
+        - name: goal
+          in: query
+          schema:
+            type: string
+          description: "e.g. google-internship | research | startup | placement"
+      responses:
+        "200":
+          description: Roadmap
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadmap"
+
+  /power-map:
+    get:
+      operationId: getPowerMap
+      tags: [power-map]
+      summary: Get campus power-map graph data (clubs, professors, pipelines)
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Power map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PowerMap"
+
+  /survival-guide:
+    get:
+      operationId: getSurvivalGuide
+      tags: [survival-guide]
+      summary: Get aggregated department survival guide sections
+      parameters:
+        - name: college
+          in: query
+          schema:
+            type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Survival guide
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SurvivalGuideSection"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    User:
+      type: object
+      required: [id, name, role, college, branch, credibilityScore, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: ["string", "null"]
+        role:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        credibilityScore:
+          type: integer
+        avatarUrl:
+          type: ["string", "null"]
+        yearOfStudy:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    UserInput:
+      type: object
+      required: [name, role, college, branch]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        role:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        avatarUrl:
+          type: string
+        yearOfStudy:
+          type: integer
+
+    Tip:
+      type: object
+      required: [id, title, content, category, urgency, college, branch, authorId, status, verificationCount, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        urgency:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        authorId:
+          type: integer
+        authorName:
+          type: ["string", "null"]
+        status:
+          type: string
+        verificationCount:
+          type: integer
+        deadline:
+          type: ["string", "null"]
+        tags:
+          type: ["string", "null"]
+        credibilityScore:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    TipInput:
+      type: object
+      required: [title, content, category, urgency, college, branch, authorId]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        category:
+          type: string
+        urgency:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        authorId:
+          type: integer
+        deadline:
+          type: string
+        tags:
+          type: string
+
+    TipPatch:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        urgency:
+          type: string
+        status:
+          type: string
+        deadline:
+          type: string
+        tags:
+          type: string
+
+    VerificationInput:
+      type: object
+      required: [verifierId]
+      properties:
+        verifierId:
+          type: integer
+
+    Notification:
+      type: object
+      required: [id, title, message, college, branch, tipId, isRead, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        tipId:
+          type: ["integer", "null"]
+        urgency:
+          type: ["string", "null"]
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+
+    NotificationInput:
+      type: object
+      required: [title, message, college, branch]
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        tipId:
+          type: integer
+        urgency:
+          type: string
+
+    DashboardStats:
+      type: object
+      required: [totalTips, verifiedTips, pendingTips, urgentTips, totalUsers, seniorContributors, totalNotifications]
+      properties:
+        totalTips:
+          type: integer
+        verifiedTips:
+          type: integer
+        pendingTips:
+          type: integer
+        urgentTips:
+          type: integer
+        totalUsers:
+          type: integer
+        seniorContributors:
+          type: integer
+        totalNotifications:
+          type: integer
+        recentTips:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tip"
+
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+
+    Confession:
+      type: object
+      required: [id, content, college, branch, category, upvoteCount, isVerified, createdAt]
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        category:
+          type: string
+          description: "placement | faculty | club | scholarship | general | toxic"
+        upvoteCount:
+          type: integer
+        isVerified:
+          type: boolean
+        createdAt:
+          type: string
+
+    ConfessionInput:
+      type: object
+      required: [content, college, branch, category]
+      properties:
+        content:
+          type: string
+          minLength: 10
+        college:
+          type: string
+        branch:
+          type: string
+        category:
+          type: string
+
+    FacultyInsight:
+      type: object
+      required: [id, professorName, college, branch, insight, insightType, verificationCount, createdAt]
+      properties:
+        id:
+          type: integer
+        professorName:
+          type: string
+        college:
+          type: string
+        branch:
+          type: string
+        department:
+          type: ["string", "null"]
+        insight:
+          type: string
+        insightType:
+          type: string
+          description: "contact | lor | office-hours | exam | general"
+        verificationCount:
+          type: integer
+        createdAt:
+          type: string
+
+    FacultyInsightInput:
+      type: object
+      required: [professorName, college, branch, insight, insightType]
+      properties:
+        professorName:
+          type: string
+          minLength: 1
+        college:
+          type: string
+        branch:
+          type: string
+        department:
+          type: string
+        insight:
+          type: string
+          minLength: 10
+        insightType:
+          type: string
+
+    Nudge:
+      type: object
+      required: [id, message, urgency, actionLabel, actionType, expiresInHours]
+      properties:
+        id:
+          type: string
+        message:
+          type: string
+        urgency:
+          type: string
+          description: "critical | high | medium"
+        actionLabel:
+          type: string
+        actionType:
+          type: string
+          description: "tip | scholarship | club | placement | faculty"
+        tipId:
+          type: ["integer", "null"]
+        expiresInHours:
+          type: integer
+
+    RoadmapStep:
+      type: object
+      required: [id, month, title, description, category, isOptional]
+      properties:
+        id:
+          type: integer
+        month:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          description: "skill | network | apply | compete | research"
+        isOptional:
+          type: boolean
+        tipId:
+          type: ["integer", "null"]
+
+    Roadmap:
+      type: object
+      required: [goal, goalLabel, steps]
+      properties:
+        goal:
+          type: string
+        goalLabel:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoadmapStep"
+
+    PowerMapNode:
+      type: object
+      required: [id, label, type, value, college]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          description: "club | professor | company | lab | pipeline"
+        value:
+          type: integer
+          description: "relative importance / size"
+        college:
+          type: string
+        description:
+          type: ["string", "null"]
+        placementRate:
+          type: ["integer", "null"]
+
+    PowerMapEdge:
+      type: object
+      required: [source, target, strength]
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+        strength:
+          type: integer
+          description: "1-10 connection strength"
+        label:
+          type: ["string", "null"]
+
+    PowerMap:
+      type: object
+      required: [nodes, edges]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PowerMapNode"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/PowerMapEdge"
+
+    SurvivalGuideSection:
+      type: object
+      required: [id, title, category, entries, college, branch]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+          description: "exams | electives | professors | clubs | placements | first-year"
+        college:
+          type: string
+        branch:
+          type: string
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/SurvivalGuideEntry"
+
+    SurvivalGuideEntry:
+      type: object
+      required: [text, source, verifiedBy]
+      properties:
+        text:
+          type: string
+        source:
+          type: string
+          description: "senior name or 'Anonymous Senior'"
+        verifiedBy:
+          type: integer
+          description: "count of seniors who confirmed this"
